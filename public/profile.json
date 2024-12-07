@@ -1,0 +1,9 @@
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "email": "volunteer@torontojs.com",
+  "schemaVersion": 1,
+  "name": "John Doe",
+  "description": "A passionate volunteer who helps at events.",
+  "happenedAt": "2024-12-07T12:00:00Z",
+  "insertedAt": "2024-12-07T12:05:00Z"
+}

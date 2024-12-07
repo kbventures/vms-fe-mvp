@@ -24,6 +24,21 @@ class Profile extends LitElement {
       font-size: 1rem;
       margin-bottom: 12px;
     }
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-right: 16px;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+    }
+    .social-links a {
+      margin: 0 8px;
+      text-decoration: none;
+      color: #0077b5; /* LinkedIn blue */
+    }
   `;
 
   static properties = {
@@ -38,7 +53,12 @@ class Profile extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     fetch('/profile.json')
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         if (data.id && data.email && data.schemaVersion && data.name && data.insertedAt) {
           this.profileData = data;
@@ -50,7 +70,7 @@ class Profile extends LitElement {
       })
       .catch((error) => {
         console.error('Error fetching profile data:', error);
-        this.profileData = { error: 'Failed to load profile data.' };
+        this.profileData = { error: 'Failed to load profile data: ' + error.message };
       });
   }
 
@@ -62,12 +82,33 @@ class Profile extends LitElement {
           : html`
               <div class="card-header">Volunteer Profile</div>
               <div class="card-content">
-                <p><strong>ID:</strong> ${this.profileData.id}</p>
-                <p><strong>Email:</strong> ${this.profileData.email}</p>
-                <p><strong>Name:</strong> ${this.profileData.name}</p>
-                <p><strong>Description:</strong> ${this.profileData.description || 'No description available'}</p>
-                <p><strong>Created At:</strong> ${this.profileData.happenedAt || 'Not available'}</p>
-                <p><strong>Inserted At:</strong> ${this.profileData.insertedAt}</p>
+                <div class="profile-header">
+                  <!-- Avatar from the profileData.avatar URL -->
+                  <img class="avatar" src="${this.profileData.avatar || '/default-avatar.png'}" alt="Avatar" />
+                  <div>
+                    <p><strong>ID:</strong> ${this.profileData.id}</p>
+                    <p><strong>Email:</strong> ${this.profileData.email}</p>
+                    <p><strong>Name:</strong> ${this.profileData.name}</p>
+                    <p><strong>Description:</strong> ${this.profileData.description || 'No description available'}</p>
+                    <p><strong>Created At:</strong> ${this.profileData.happenedAt || 'Not available'}</p>
+                    <p><strong>Inserted At:</strong> ${this.profileData.insertedAt}</p>
+                  </div>
+                </div>
+                <div class="social-links">
+                  ${this.profileData.socialLinks
+                    ? html`
+                        ${this.profileData.socialLinks.linkedin
+                          ? html`<a href="${this.profileData.socialLinks.linkedin}" target="_blank">LinkedIn</a>`
+                          : ''}
+                        ${this.profileData.socialLinks.twitter
+                          ? html`<a href="${this.profileData.socialLinks.twitter}" target="_blank">Twitter</a>`
+                          : ''}
+                        ${this.profileData.socialLinks.github
+                          ? html`<a href="${this.profileData.socialLinks.github}" target="_blank">GitHub</a>`
+                          : ''}
+                      `
+                    : ''}
+                </div>
               </div>
             `}
       </div>

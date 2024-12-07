@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';  // Import from the 'lit' package
+import { LitElement, html, css } from 'lit';
 
 class Profile extends LitElement {
   static styles = css`
@@ -7,6 +7,22 @@ class Profile extends LitElement {
       padding: 16px;
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
+    }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .card-content {
+      font-size: 1rem;
+      margin-bottom: 12px;
     }
   `;
 
@@ -21,14 +37,12 @@ class Profile extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    // Fetch the profile data from /profile.json
     fetch('/profile.json')
       .then((response) => response.json())
       .then((data) => {
-        // Validate required fields based on schema
         if (data.id && data.email && data.schemaVersion && data.name && data.insertedAt) {
           this.profileData = data;
-          this.requestUpdate(); // Make sure to trigger an update after data is loaded
+          this.requestUpdate();
         } else {
           console.error('Missing required profile fields');
           this.profileData = { error: 'Required fields missing in profile data.' };
@@ -42,17 +56,19 @@ class Profile extends LitElement {
 
   render() {
     return html`
-      <div>
+      <div class="card">
         ${this.profileData.error
           ? html`<p>Error: ${this.profileData.error}</p>`
           : html`
-              <h1>Volunteer Profile</h1>
-              <p><strong>ID:</strong> ${this.profileData.id}</p>
-              <p><strong>Email:</strong> ${this.profileData.email}</p>
-              <p><strong>Name:</strong> ${this.profileData.name}</p>
-              <p><strong>Description:</strong> ${this.profileData.description || 'No description available'}</p>
-              <p><strong>Created At:</strong> ${this.profileData.happenedAt || 'Not available'}</p>
-              <p><strong>Inserted At:</strong> ${this.profileData.insertedAt}</p>
+              <div class="card-header">Volunteer Profile</div>
+              <div class="card-content">
+                <p><strong>ID:</strong> ${this.profileData.id}</p>
+                <p><strong>Email:</strong> ${this.profileData.email}</p>
+                <p><strong>Name:</strong> ${this.profileData.name}</p>
+                <p><strong>Description:</strong> ${this.profileData.description || 'No description available'}</p>
+                <p><strong>Created At:</strong> ${this.profileData.happenedAt || 'Not available'}</p>
+                <p><strong>Inserted At:</strong> ${this.profileData.insertedAt}</p>
+              </div>
             `}
       </div>
     `;
